@@ -6,15 +6,18 @@ Add-PSSnapIn Microsoft.SharePoint.PowerShell  -ErrorAction SilentlyContinue
 
 #region Input Variables 
 
-$SiteUrl = "https://onewri.sharepoint.com/sites/subagreements" #Replace the URL
-
+#$SiteUrl = "https://onewri.sharepoint.com/sites/subagreements" #Replace the URL
+$SiteUrl = Read-Host -Prompt "Site Url"
 
 $UserName = Read-Host -Prompt "Enter User Name"
-portal_admin@onewri.onmicrosoft.com
+#portal_admin@onewri.onmicrosoft.com
 $SecurePassword = Read-Host -Prompt "Enter password" -AsSecureString
-@Portal002
+#@Portal002
 
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -argumentlist $UserName, $SecurePassword
+
+$listTitle = Read-Host -Prompt "For List Title"
+$listName = Read-Host -Prompt "For Specific Workflow Name"
 
 #endregion
 
@@ -72,14 +75,14 @@ if (!$clientContext.ServerObjectIsNull.Value)
         foreach ($list in $lists)       
         {  
 			#Remove this if statement for all lists
-			if ($list.Title -eq "Contracts - Request for Contracts"){
+			if ($list.Title -eq $listTitle){
 				$workflowSubscriptions = $workflowSubscriptionService.EnumerateSubscriptionsByList($list.Id);
 				$clientContext.Load($workflowSubscriptions);                
 				$clientContext.ExecuteQuery();                
 				foreach($workflowSubscription in $workflowSubscriptions)
 				{   
 				#Run for a particular Workflow Name
-				if($workflowSubscription.Name -eq "Contracts WF Request for Contracts"){	
+				if($workflowSubscription.Name -eq $listName){	
 						$count = 0
 						
 						$wfSub = @()
