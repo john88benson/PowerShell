@@ -16,8 +16,14 @@ $SecurePassword = Read-Host -Prompt "Enter password" -AsSecureString
 
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -argumentlist $UserName, $SecurePassword
 
-$listTitle = Read-Host -Prompt "For List Title"
-$listName = Read-Host -Prompt "For Specific Workflow Name"
+$listTitle = Read-Host -Prompt "For List Title(Optional)"
+
+$wFNameArray = @()
+do{
+    $inputWFN = (Read-Host "Enter Specific Workflow Names(Optional)")
+    if($inputWFN -ne ''){$wFNameArray += $inputWFN}
+}
+until ($inputWFN -eq '')
 
 #endregion
 
@@ -73,16 +79,24 @@ if (!$clientContext.ServerObjectIsNull.Value)
 
 
         foreach ($list in $lists)       
-        {  
-			#Remove this if statement for all lists
-			if ($list.Title -eq $listTitle){
+        { 
+            #Check for specific list Title
+            $specList 
+            if ($listTitle){
+                $specList = ($list.Title -eq $listTitle)
+            }
+            else{
+                $speclist = $True
+            }
+        
+			if ($speclist -eq $True){
 				$workflowSubscriptions = $workflowSubscriptionService.EnumerateSubscriptionsByList($list.Id);
 				$clientContext.Load($workflowSubscriptions);                
 				$clientContext.ExecuteQuery();                
 				foreach($workflowSubscription in $workflowSubscriptions)
 				{   
 				#Run for a particular Workflow Name
-				if($workflowSubscription.Name -eq $listName){	
+				if($wFNameArray -contains $workflowSubscription.Name){	
 						$count = 0
 						
 						$wfSub = @()
