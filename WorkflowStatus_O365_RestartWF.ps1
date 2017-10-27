@@ -6,17 +6,21 @@ Add-PSSnapIn Microsoft.SharePoint.PowerShell  -ErrorAction SilentlyContinue
 
 #region Input Variables 
 
-#$SiteUrl = "https://onewri.sharepoint.com/sites/subagreements" #Replace the URL
 $SiteUrl = Read-Host -Prompt "Site Url"
 
 $UserName = Read-Host -Prompt "Enter User Name"
-#portal_admin@onewri.onmicrosoft.com
+
 $SecurePassword = Read-Host -Prompt "Enter password" -AsSecureString
-#@Portal002
 
 $cred = New-Object -TypeName System.Management.Automation.PSCredential -argumentlist $UserName, $SecurePassword
 
-$listTitle = Read-Host -Prompt "For List Title(Optional)"
+$lTArray = @()
+do{
+    $inputLT = Read-Host -Prompt "Enter List Titles(Optional)"
+    if($inputLT -ne ''){$lTArray += $inputLT}
+}
+until ($inputLT -eq '')
+
 
 $wFNameArray = @()
 do{
@@ -82,8 +86,8 @@ if (!$clientContext.ServerObjectIsNull.Value)
         { 
             #Check for specific list Title
             $specList 
-            if ($listTitle){
-                $specList = ($list.Title -eq $listTitle)
+            if ($lTArray){
+                $specList = ($lTArray -contains $list.Title)
             }
             else{
                 $speclist = $True

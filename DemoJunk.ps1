@@ -1,10 +1,15 @@
-﻿$var1 = Read-Host "Movie Name"
+﻿$lNameArray = @()
+do{
+    $inputLN = (Read-Host "Enter Specific Workflow Names(Optional)")
+    if($inputLN -ne ''){$lNameArray += $inputLN}
+}
+until ($inputLN -eq '')
 
 $array= @("Blade Runner 2049","John Wick Chapter 2", "Thor: Ragnarok")
 
 foreach ($element in $array) {        
-        if($var1){
-            $speclist = ($element -eq $var1)
+        if($lNameArray){
+            $speclist = ($lNameArray -contains $element)
         }
         else{
             $speclist = $True
